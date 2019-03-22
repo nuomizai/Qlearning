@@ -30,13 +30,13 @@ class CliffEnvironment(object):
         self.y += self.move[action][1]
         self.x, self.y = self.clip(self.x, self.y)
 
-        if self.x >= 1 and self.x <= 10 and self.y == 0:  # 陷阱中
+        if self.x >= 1 and self.x <= 10 and self.y == 0:  # fall into a snare
             reward = -100
             self._reset()
-        elif self.x == self.width - 1 and self.y == 0:  # 到达终点
+        elif self.x == self.width - 1 and self.y == 0:  # the final destination
             reward = 0
             self.is_destination = True
             self.done = True
-        else:  # 走动
+        else:  # safe place and keep moving
             reward = -1
         return tuple((self.x, self.y)), reward, self.done

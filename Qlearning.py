@@ -22,7 +22,7 @@ def print_policy(Q):
     for i in range(env.height):
         line = ""
         for j in range(env.width):
-            action = np.argmax(Q[(j, i)])  # 找到具有最大Q的action
+            action = np.argmax(Q[(j, i)])  # find the action to max Q value
             if action == 0:
                 line += "up  "
             elif action == 1:
@@ -37,7 +37,7 @@ def print_policy(Q):
 
 def Qlearning(alpha=0.1, episode_num=1000, discount_factor=1.0):
     env = CliffEnvironment()
-    Q = defaultdict(lambda: np.zeros(env.nA))  # lambda的作用是什么
+    Q = defaultdict(lambda: np.zeros(env.nA))
     rewards = []
     for i in range(episode_num):
         env._reset()
@@ -46,16 +46,15 @@ def Qlearning(alpha=0.1, episode_num=1000, discount_factor=1.0):
 
         while not done:
             prob = epsilon_greedy_policy(Q, cur_state, env.nA)
-            action = np.random.choice(np.arange(env.nA), p=prob)  # 每次重新决定当前的action
-            next_state, reward, done = env._step(action)  # 使用action找到下一个状态
+            action = np.random.choice(np.arange(env.nA), p=prob)  # re-select action per round
+            next_state, reward, done = env._step(action)  # apply action to find next state
             if done:
                 Q[cur_state][action] = Q[cur_state][action] + alpha * (
                         reward + discount_factor * 0.0 - Q[cur_state][action])
                 break
             else:
-                next_action = greedy_policy(Q,
-                                            cur_state)  # 找到下一个action,使用Q[next_state][next_action]的值，但是下一个action不一定是这个
-                # next_action = greedy_policy(Q,next_state)
+                # use next_action ONLY to calculate Q，BUT the actual next action to perform is  not that
+                next_action = greedy_policy(Q, next_state)
                 Q[cur_state][action] = Q[cur_state][action] + alpha * (
                         reward + discount_factor * Q[next_state][next_action] - Q[cur_state][action])
                 cur_state = next_state
@@ -83,4 +82,5 @@ for i in range(10):
     else:
         average_rewards = average_rewards + np.array(rewards)
 average_rewards = average_rewards * 1.0 / 10
-plot(range(1, 1 + 1000), average_rewards)
+plt.title('average_reward_for_Q_learning')
+plot(range(1000), average_rewards)
